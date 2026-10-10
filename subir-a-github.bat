@@ -4,43 +4,27 @@ echo ========================================================
 echo       MUNDO CELL - SUBIR PROYECTO A GITHUB (APK)
 echo ========================================================
 echo.
-echo Este asistente subirá el proyecto a tu cuenta de GitHub.
-echo Al subirlo, GitHub Actions compilará automáticamente el APK
-echo y lo pondrá a tu disposición para descargarlo e instalarlo.
+echo Repositorio vinculado: https://github.com/jesusramirez173/mundo-cell.git
+echo Rama: main
 echo.
-
-set /p REPO_URL="Pega la URL de tu repositorio de GitHub (ej. https://github.com/jesusramirez173/mundo-cell.git): "
-
-if "%REPO_URL%"=="" (
-    echo Error: Debes ingresar una URL de repositorio válida.
-    pause
-    exit /b 1
-)
-
-echo.
-echo [1/3] Configurando enlace remoto...
-git remote remove origin 2>nul
-git remote add origin %REPO_URL%
-
-echo [2/3] Preparando rama principal (main)...
-git branch -M main
-
-echo [3/3] Subiendo código a GitHub...
+echo Subiendo codigo a GitHub...
 git push -u origin main
-
+echo.
 if %errorLevel% equ 0 (
-    echo.
     echo ========================================================
-    echo  ¡ÉXITO! Proyecto subido a GitHub correctamente.
+    echo  ¡EXITO! Codigo subido correctamente a GitHub.
     echo ========================================================
     echo.
-    echo GitHub Actions está compilando tu archivo MundoCell-v1.0.apk.
-    echo Entra a la pestaña "Actions" o "Releases" de tu repositorio
-    echo para descargar e instalar el APK en tu celular.
+    echo GitHub Actions esta compilando tu archivo MundoCell-v1.0.apk.
+    echo Puedes ver el progreso y descargar el APK en:
+    echo https://github.com/jesusramirez173/mundo-cell/actions
+    echo https://github.com/jesusramirez173/mundo-cell/releases
 ) else (
-    echo.
-    echo Ocurrió un error al subir. Verifica tus credenciales de GitHub o que el repositorio exista.
+    echo ========================================================
+    echo  Atencion: Se requiere inicio de sesion de GitHub
+    echo ========================================================
+    echo Si se abrio una ventana de GitHub en tu navegador, haz clic en "Sign in"
+    echo para autorizar la subida.
 )
-
 echo.
 pause
