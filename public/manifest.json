@@ -1,0 +1,16 @@
+{
+  "short_name": "Mundo Cell",
+  "name": "Mundo Cell - Inventario & Ventas",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "type": "image/png",
+      "sizes": "192x192 512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#07090e",
+  "theme_color": "#07090e",
+  "display": "standalone",
+  "orientation": "portrait"
+}

@@ -1,0 +1,87 @@
+name: Build Mundo Cell Android APK
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-apk:
+    name: Compilar APK Android
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar Código (Checkout)
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Instalar dependencias web
+        run: npm ci || npm install
+
+      - name: Compilar aplicación web
+        run: npm run build
+
+      - name: Sincronizar Capacitor con Android
+        run: npx cap sync android
+
+      - name: Configurar Java JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: 17
+          cache: 'gradle'
+
+      - name: Dar permisos de ejecución a Gradle
+        run: chmod +x ./android/gradlew
+
+      - name: Compilar APK Debug
+        run: |
+          cd android
+          ./gradlew assembleDebug --stacktrace
+
+      - name: Renombrar APK para descarga directa
+        run: |
+          mkdir -p build-output
+          cp android/app/build/outputs/apk/debug/app-debug.apk build-output/MundoCell-v1.0.apk
+
+      - name: Subir APK como Artefacto de GitHub Actions
+        uses: actions/upload-artifact@v4
+        with:
+          name: MundoCell-APK-Android
+          path: build-output/MundoCell-v1.0.apk
+          retention-days: 30
+
+      - name: Crear Release en GitHub con el APK listo para descargar
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.0
+          name: 'Mundo Cell v1.0.0 APK'
+          body: |
+            ## 📱 APK Móvil de Mundo Cell - Control de Inventario y Ventas
+            
+            ¡La aplicación para Android de Mundo Cell está lista para instalar!
+            
+            ### ✨ Características incluidas:
+            - **Control de Inventario**: CRUD completo (Marca, Modelo, Precio numérico, Stock con asterisco rojo `*` para &lt; 2 unidades).
+            - **Marcas de Celulares**: Logos vectoriales oficiales de Xiaomi, Motorola, Infinix, Tecno y iPhone.
+            - **Apartado de Accesorios Desplazable**: Forros, Audífonos, Cable USB, Router, Cornetas.
+            - **Punto de Venta (POS)**: Descuento de stock en tiempo real y tickets imprimibles / WhatsApp.
+            - **Venta del Día y Cierre de Caja**: Desglose exacto de Efectivo, Divisa ($), Punto de Venta, Pago Móvil, Cashea y Weppa.
+            - **Base de Datos Confiable**: 100% offline y exportable a JSON con 1 clic.
+            
+            ### 📥 Descarga:
+            Descarga el archivo `MundoCell-v1.0.apk` adjunto abajo e instálalo en tu teléfono Android.
+          files: build-output/MundoCell-v1.0.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
